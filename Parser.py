@@ -39,6 +39,7 @@ def bind(driver):
     driver.find_element(By.ID, 'bind').click()
     print('Отправка формы......')
 
+
 def get_appointment(driver):
     driver.find_element(By.XPATH,
                         "/html/body/div[3]/div[1]/div/div/div[2]/div/div[3]/div/div[2]/button").click()
@@ -95,30 +96,46 @@ if __name__ == "__main__":
     patient_number = int(input('Введите номер пациента: '))
     print(f'Получение списка врачей для {patients[patient_number].text}...............')
     patients[patient_number].click()
-    #===================================================================================================================
+    # ===================================================================================================================
     sleep(5)
     driver.find_element(By.XPATH,
                         '/html/body/div[3]/div[1]/div/div/div[2]/div/div[2]/div[1]/div[2]/div/div[2]/button').click()
-    #===================================================================================================================
+    # ===================================================================================================================
     sleep(5)
     doctor_specialization_click(driver)
     print('Список врачей получен!')
-    sleep(5)
+    #sleep(5)
     doctors = find_doctors_list(driver)
     x = doctors.find_elements(By.TAG_NAME, 'div')
     for number, i in enumerate(x):
+
         print(f'{number}: {i.text}')
+        sleep(0.3)
     sleep(5)
-    #===================================================================================================================
+    # ===================================================================================================================
     doctor_number = int(input('Введите номер специалиста: '))
     x[doctor_number].click()
     sleep(5)
     x = driver.find_element(By.XPATH, '/html/body/div[3]/div[1]/div/div/div[2]/div/div[2]/div[3]/div[2]/div[1]')
     x.find_elements(By.TAG_NAME, 'button')[1].click()
     sleep(5)
-    appointment_table = driver.find_element(By.CLASS_NAME, 'src-pages-appointment-new-components-stepThree-components-common-TimeTable-___styles-module__table___1Zxhu')
-    appointment_day = appointment_table.find_elements(By.TAG_NAME, 'span')
-    
+    # получаем всю таблицу
+    appointment_table = driver.find_element(By.XPATH,
+                                            '/html/body/div[3]/div[1]/div/div/div[2]/div/div[2]/div[3]/div[2]/div[2]/div[1]/div[2]')
+    #print(appointment_table)
+    # разбиваем таблицу по дням
+    appointment_days = appointment_table.find_elements(By.CLASS_NAME,
+                                                       'src-pages-appointment-new-components-stepThree-components-common-TimeTable-components-TimeTableItem-___styles-module__table_item___1kSLj')
+    # проходим по всем дням для извлечения даты и времени записи
+    for day in appointment_days:
+        appointment_date = day.find_elements(By.TAG_NAME, 'h4')
+        print(appointment_date[1].text)
+        print(appointment_date[3].text)
+        appointment_time = day.find_elements(By.TAG_NAME, 'button')
+        for el in appointment_time:
+            print(el.find_element(By.TAG_NAME, 'span').text)
+
+    sleep(1)
     driver.close()
     driver.quit()
     sleep(5)
