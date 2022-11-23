@@ -13,7 +13,7 @@ def init_driver():
     return driver
 
 
-def get_page():
+def get_page(driver):
     print('Переход на страницу записи......')
     driver.get("https://www.mos.ru/services/zapis-k-vrachu/")
     print('Готово!')
@@ -75,9 +75,9 @@ def find_doctors_list(driver):
     return doctors
 
 
-if __name__ == "__main__":
+def main():
     driver = init_driver()
-    get_page()
+    get_page(driver)
     get_continue(driver)
     enter_password(driver)
     enter_login(driver)
@@ -104,11 +104,10 @@ if __name__ == "__main__":
     sleep(5)
     doctor_specialization_click(driver)
     print('Список врачей получен!')
-    #sleep(5)
+    # sleep(5)
     doctors = find_doctors_list(driver)
     x = doctors.find_elements(By.TAG_NAME, 'div')
     for number, i in enumerate(x):
-
         print(f'{number}: {i.text}')
         sleep(0.3)
     sleep(5)
@@ -120,22 +119,33 @@ if __name__ == "__main__":
     x.find_elements(By.TAG_NAME, 'button')[1].click()
     sleep(5)
     # получаем всю таблицу
-    appointment_table = driver.find_element(By.XPATH,
-                                            '/html/body/div[3]/div[1]/div/div/div[2]/div/div[2]/div[3]/div[2]/div[2]/div[1]/div[2]')
-    #print(appointment_table)
+
+    appointment_table = driver.find_element(By.XPATH, '/html/body/div[3]/div[1]/div/div/div[2]/div/'
+                                                      'div[2]/div[3]/div[2]/div[2]/div[1]/div[2]')
+    # print(appointment_table)
     # разбиваем таблицу по дням
-    appointment_days = appointment_table.find_elements(By.CLASS_NAME,
-                                                       'src-pages-appointment-new-components-stepThree-components-common-TimeTable-components-TimeTableItem-___styles-module__table_item___1kSLj')
+    appointment_days = appointment_table.find_elements(By.CLASS_NAME, 'src-pages-appointment-new-components-stepThree'
+                                                                      '-components-common-TimeTable-components-TimeTab'
+                                                                      'leItem-___styles-module__table_item___1kSLj')
     # проходим по всем дням для извлечения даты и времени записи
     for day in appointment_days:
-        appointment_date = day.find_elements(By.TAG_NAME, 'h4')
-        print(appointment_date[1].text)
-        print(appointment_date[3].text)
-        appointment_time = day.find_elements(By.TAG_NAME, 'button')
-        for el in appointment_time:
-            print(el.find_element(By.TAG_NAME, 'span').text)
+        try:
+            appointment_date = day.find_elements(By.TAG_NAME, 'h4')
+            print(appointment_date[1].text)
+            print(appointment_date[3].text)
+            appointment_time = day.find_elements(By.TAG_NAME, 'button')
+            for el in appointment_time:
+                print(el.find_element(By.TAG_NAME, 'span').text)
+        except:
+            print('Нет доступного времени для записи!')
 
     sleep(1)
     driver.close()
     driver.quit()
     sleep(5)
+    return 'lalalalal'
+
+
+if __name__ == "__main__":
+    x = main()
+    print(x)
